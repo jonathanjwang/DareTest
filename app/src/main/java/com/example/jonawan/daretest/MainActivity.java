@@ -12,7 +12,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParsePush;
+import com.parse.ParseQuery;
 
 import java.util.LinkedList;
 
@@ -23,6 +27,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     ImageView mImageView, thumbImageView;
     EditText dareText;
+    Bitmap imageBitmap;
 
 
     @Override
@@ -40,7 +45,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myFancyMethod(v);
+                submitDare(v);
             }
         });
 
@@ -49,17 +54,52 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     }
 
-    public void myFancyMethod(View v) {
+    public void submitDare(View v) {
 
         String dareMessage = dareText.getText().toString();
-
-        LinkedList<String> channels = new LinkedList<String>();
+// send a push notification
+    /*    LinkedList<String> channels = new LinkedList<String>();
         channels.add("DareChannel");
 
         ParsePush push = new ParsePush();
         push.setChannels(channels);
         push.setMessage(dareMessage);
         push.sendInBackground();
+*/
+        // let's try to save some data in the parse cloud
+
+        ParseObject dareRow = new ParseObject("DareRow");
+        dareRow.put("userID", 1);
+        dareRow.put("dareString", dareMessage);
+        dareRow.put("dareID", "1");
+//        dareRow.put("imageThumb", imageBitmap);
+        dareRow.saveInBackground();
+
+        String objID = dareRow.getObjectId();
+
+        // retrieve stuff
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("DareRow");
+        query.getInBackground(objID, new GetCallback<ParseObject>() {
+            public void done(ParseObject object, ParseException e) {
+                if (e == null) {
+                    object.get("dareString");
+                    LinkedList<String> channels = new LinkedList<String>();
+                    channels.add("DareChannel");
+
+                    ParsePush push = new ParsePush();
+                    push.setChannels(channels);
+                    push.setMessage((String)object.get("dareString"));
+                    push.sendInBackground();
+                } else {
+                    // something went wrong
+                }
+            }
+        });
+
+
+
+
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -94,7 +134,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            imageBitmap = (Bitmap) extras.get("data");
             thumbImageView.setImageBitmap(imageBitmap);
         }
     }
