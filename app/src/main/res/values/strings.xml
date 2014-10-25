@@ -8,5 +8,10 @@
     <string name="camera_button_text">Take a photo</string>
     <string name="submit_button_text">Submit</string>
     <string name="edit_message">edit text</string>
+    <string name="title_activity_feed">Dare Feed</string>
+    <string name="title_dare_view">Dare View</string>
+    <string name="upvote_text_glyph">&#x2191;</string>
+    <string name="downvote_text_glyph">&#x2193;</string>
+
 
 </resources>

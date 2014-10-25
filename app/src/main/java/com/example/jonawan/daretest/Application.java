@@ -2,6 +2,7 @@ package com.example.jonawan.daretest;
 
 import com.parse.Parse;
 import com.parse.ParseInstallation;
+import com.parse.ParseObject;
 import com.parse.ParsePush;
 
 /**
@@ -16,7 +17,7 @@ public class Application extends android.app.Application {
         super.onCreate();
 
         // Parse Push Notifications
-
+        ParseObject.registerSubclass(Dare.class);
         Parse.initialize(this, "cdPS8WC9A9L4bJtpKaj3LSqVnyeBDtl5znL4PM8L", "JBYLF9PWmZTNFzKGCViILpIleBchMjHoq9BYoilT");
         ParseInstallation.getCurrentInstallation().saveInBackground();
         ParsePush.subscribeInBackground("DareChannel");
